@@ -69,7 +69,7 @@ describe('Account Mongo Repository', () => {
     })
     const { insertedId: id } = result
 
-    await sut.updateAccessToken(result.insertedId, 'any_token')
+    await sut.updateAccessToken(result.insertedId.toString(), 'any_token')
     const account = await accountCollection.findOne({ _id: id })
     expect(account).toBeTruthy()
     expect(account.accessToken).toBe('any_token')
