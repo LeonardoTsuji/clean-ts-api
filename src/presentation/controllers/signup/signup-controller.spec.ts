@@ -39,7 +39,7 @@ const makeFakeAccount = (): AccountModel => ({
 })
 
 interface SutTypes {
-  sut: SignUpController,
+  sut: SignUpController
   addAccountStub: AddAccount
   validationStub: Validation
 }
