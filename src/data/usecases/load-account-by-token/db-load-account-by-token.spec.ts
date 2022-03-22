@@ -80,4 +80,11 @@ describe('DbLoadAccountByToken Usecase', () => {
     const account = await sut.load({ accessToken: 'any_token', role: 'any_role' })
     expect(account).toBeNull()
   })
+
+  test('Should return an account on success', async () => {
+    const { sut } = makeSut()
+
+    const account = await sut.load({ accessToken: 'any_token', role: 'any_role' })
+    expect(account).toEqual(makeFakeAccount())
+  })
 })
