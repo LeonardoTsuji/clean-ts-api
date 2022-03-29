@@ -16,18 +16,18 @@ const makeSut = (): JwtAdapter => {
 
 describe('Jwt Adapter', () => {
   describe('sign()', () => {
-    test('Shoudl call sign with correct values', async () => {
+    test('Should call sign with correct values', async () => {
       const sut = makeSut()
       const signSpy = jest.spyOn(jwt, 'sign')
       await sut.encrypt('any_value')
       expect(signSpy).toHaveBeenCalledWith({ id: 'any_value' }, 'secret')
     })
-    test('Shoudl return a token on sign success', async () => {
+    test('Should return a token on sign success', async () => {
       const sut = makeSut()
       const accessToken = await sut.encrypt('any_value')
       expect(accessToken).toBe('any_token')
     })
-    test('Shoudl throw if sign throws', async () => {
+    test('Should throw if sign throws', async () => {
       const sut = makeSut()
       jest.spyOn(jwt, 'sign').mockImplementationOnce(() => {
         throw new Error()
@@ -37,11 +37,16 @@ describe('Jwt Adapter', () => {
     })
   })
   describe('verify()', () => {
-    test('Shoudl call verify with correct values', async () => {
+    test('Should call verify with correct values', async () => {
       const sut = makeSut()
-      const signSpy = jest.spyOn(jwt, 'verify')
+      const verifySpy = jest.spyOn(jwt, 'verify')
       await sut.decrypt('any_token')
-      expect(signSpy).toHaveBeenCalledWith('any_token', 'secret')
+      expect(verifySpy).toHaveBeenCalledWith('any_token', 'secret')
+    })
+    test('Should return a value on verify success', async () => {
+      const sut = makeSut()
+      const value = await sut.decrypt('any_token')
+      expect(value).toBe('any_value')
     })
   })
 })
