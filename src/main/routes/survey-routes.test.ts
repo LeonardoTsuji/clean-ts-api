@@ -8,6 +8,26 @@ import env from '../config/env'
 let surveyCollection: Collection
 let accountCollection: Collection
 
+const makeAccessToken = async (): Promise<string> => {
+  const result = await accountCollection.insertOne({
+    name: 'Leonardo',
+    email: 'leonardo_tsuji@hotmail.com',
+    password: '123',
+    role: 'admin'
+  })
+  const id = result.insertedId
+
+  const accessToken = sign({ id }, env.jwtSecret)
+  await accountCollection.updateOne({ _id: id },
+    {
+      $set: {
+        accessToken
+      }
+
+    })
+  return accessToken
+}
+
 describe('Survey Routes', () => {
   beforeAll(async () => {
     await MongoHelper.connect(process.env.MONGO_URL)
@@ -44,22 +64,7 @@ describe('Survey Routes', () => {
     })
 
     test('Should return 204 on add survey with valid token', async () => {
-      const result = await accountCollection.insertOne({
-        name: 'Leonardo',
-        email: 'leonardo_tsuji@hotmail.com',
-        password: '123',
-        role: 'admin'
-      })
-      const id = result.insertedId
-
-      const accessToken = sign({ id }, env.jwtSecret)
-      await accountCollection.updateOne({ _id: id },
-        {
-          $set: {
-            accessToken
-          }
-
-        })
+      const accessToken = await makeAccessToken()
       await request(app)
         .post('/api/surveys')
         .set('x-access-token', accessToken)
@@ -87,21 +92,8 @@ describe('Survey Routes', () => {
     })
 
     test('Should return 200 on load surveys with valid token', async () => {
-      const result = await accountCollection.insertOne({
-        name: 'Leonardo',
-        email: 'leonardo_tsuji@hotmail.com',
-        password: '123'
-      })
-      const id = result.insertedId
+      const accessToken = await makeAccessToken()
 
-      const accessToken = sign({ id }, env.jwtSecret)
-      await accountCollection.updateOne({ _id: id },
-        {
-          $set: {
-            accessToken
-          }
-
-        })
       await surveyCollection.insertMany([
         {
           question: 'any_question',
